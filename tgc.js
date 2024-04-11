@@ -1,17 +1,14 @@
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
-context.beginPath();
-context.moveTo(0, 0);
-context.lineTo(2000, 1000);
-context.stroke();
 let square = {
   height: 80,
   width: 30,
-  color: "green",
+  color: "purple",
   posX: 230,
-  posY: 500,
+  posY: 450,
   speedX: 0, // Egenskaper för att styra hastigheten på rutan
   speedY: 0,
+  speed: 5,
 };
 
 // Variabler för att styra hastigheten på rutan
@@ -32,6 +29,15 @@ function updatePosition(rect) {
     // Vänd på hastigheten i y-led
     rect.speedY = -rect.speedY;
   }
+  else if (rect.posY + rect.height <= 0 + rect.height){
+    rect.speedY = -rect.speedY
+  }
+  else if (rect.posX + rect.width >= canvas.width){
+    rect.speedX = -rect.speedX
+  }
+  else if (rect.posX + rect.width <= 0 + rect.width){
+    rect.speedX = -rect.speedX
+  }
 
   rect.posX += rect.speedX;
   rect.posY += rect.speedY;
@@ -46,23 +52,46 @@ function clearCanvas() {
 // Det här är huvudfunktionen som kör funktioner för att animeringen ska fungera.
 
 function update() {
-  updatePosition(square);
+  updatePosition(square);                    
   clearCanvas();
   drawRect(square);
   requestAnimationFrame(update);
 }
 requestAnimationFrame(update)
-function moveCar(direction) {
-        if (direction === 'left' && carX > 0) {
-            carX -= carSpeed;
-        } else if (direction === 'right' && carX + carWidth < canvas.width) {
-            carX += carSpeed;
-        }
-    }
-document.addEventListener("keydown", function (event) {
-  if (event.key === "ArrowLeft") {
-    moveCar("left");
-  } else if (event.key === "ArrowRight") {
-    moveCar("right");
-  }
-});
+    document.onkeydown = function (e) {
+      console.log(e);
+      const key = e.key;
+      switch (key) {
+        case "w":
+          square.speedY = -square.speed;
+          break;
+        case "a":
+          square.speedX = -square.speed;
+          break;
+        case "s":
+          square.speedY = square.speed;
+          break;
+        case "d":
+          square.speedX = square.speed;
+          break;
+      }
+    };
+    document.onkeyup = function (e) {
+      console.log(e);
+      const key = e.key;
+      switch (key) {
+        case "w":
+          square.speedY = 0;
+          break;
+        case "a":
+          square.speedX = 0;
+          break;
+        case "s":
+          square.speedY = 0;
+          break;
+        case "d":
+          square.speedX = 0;
+          break;
+      }
+    };
+    
