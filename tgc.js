@@ -1,5 +1,11 @@
 var canvas = document.getElementById("canvas");
+var img = document.getElementById("road")
 var context = canvas.getContext("2d");
+var img = new Image();
+img.src = "car.png";
+var bild = new Image();
+bild.src = "road.png";
+
 let square = {
   height: 80,
   width: 30,
@@ -17,9 +23,15 @@ let speedY = 2;
 
 //Ritar ut en ruta med sin färg, på den position den befinner sig.
 function drawRect(rect) {
-  context.fillStyle = rect.color;
-  context.fillRect(rect.posX, rect.posY, rect.width, rect.height);
+  context.drawImage(img, rect.posX, rect.posY, rect.width, rect.height);
 }
+function Background(){
+  context.drawImage(bild, 0, 0, canvas.width, canvas.height)
+}
+function collition(){
+
+}
+
 
 //Uppdaterar postionen på en ruta, beror av speedX och speedY
 //   function updatePosition(rect) {}
@@ -46,7 +58,7 @@ function updatePosition(rect) {
 
 // Denna funktion "tömmer" canvasen genom att måla den svart.
 function clearCanvas() {
-  context.fillStyle = "beige";
+  context.drawImage(img, 0, 0)
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
 // Det här är huvudfunktionen som kör funktioner för att animeringen ska fungera.
@@ -54,6 +66,7 @@ function clearCanvas() {
 function update() {
   updatePosition(square);                    
   clearCanvas();
+  Background();
   drawRect(square);
   requestAnimationFrame(update);
 }
