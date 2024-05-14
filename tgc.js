@@ -16,7 +16,7 @@ r = 1500;
 g = 3460;
 b = 7840;
 
-let square = {
+let player = {
   height: 80,
   width: 30,
   color: "purple",
@@ -36,17 +36,20 @@ let speedY = 2;
 function drawRect(rect) {
   context.drawImage(bil, rect.posX, rect.posY, rect.width, rect.height);
 }
-function Background() {
+
+function drawRoad() {
   context.drawImage(bild, 0, 0, canvas.width, canvas.height);
 }
-function collition() {}
 
 let score = 0;
 
 function writeScore() {
   context.fillStyle = "black";
-  context.fillText(`score: ${score}`, 5, 50);
   context.font = "50px serif";
+  TextY = 50;
+  TextX = 110;
+  context.textAlign = "center";
+  context.fillText(`score: ${score}`, TextX, TextY);
 }
 //Uppdaterar postionen på en ruta, beror av speedX och speedY
 //   function updatePosition(rect) {}
@@ -115,44 +118,78 @@ function drawObstacles() {
     );
   }
 }
+canvas.addEventListener("click", function (e) {
+  const rect = canvas.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+
+  const buttonX = 150;
+  const buttonY = 310;
+  const buttonWidth = 180;
+  const buttonHeight = 50;
+  if (
+    clickX >= buttonX &&
+    clickX <= buttonX + buttonWidth &&
+    clickY >= buttonY &&
+    clickY <= buttonY + buttonHeight
+  ) {
+    restartGame();
+  }
+});
+function DrawRestartButton() {
+  let buttonX = 150;
+  let buttonY = 310;
+  let buttonWidth = 180;
+  let buttonHeight = 50;
+
+  context.fillStyle = "violet";
+  context.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+  context.fillStyle = "#001122";
+  context.textAlign = "center";
+  context.font = "25px arial";
+  context.fillText("Start Game", 240, 345, 200);
+}
 function GameOver(rect) {
   for (let i = 0; i < obstacles.length; i++) {
     const obstacle = obstacles[i];
     if (
-      rect.posX < obstacle.x + obstacle.width &&
-      rect.posX + rect.width > obstacle.x &&
-      rect.posY < obstacle.y + obstacle.height &&
-      rect.posY + rect.height > obstacle.y
+      rect.posX < obstacle.x + obstacle.width - 10 &&
+      rect.posX + rect.width > obstacle.x + 10 &&
+      rect.posY < obstacle.y + obstacle.height - 10 &&
+      rect.posY + rect.height > obstacle.y + 10
     ) {
+      context.textAlign = "center";
       context.fillStyle = "black";
-      context.fillText("Game over", canvas.width / 2 - 125, canvas.height / 2);
-      obstacles.splice(0, obstacles.length);
+      context.fillText("Game over", 240, 290);
+      obstacles = [];
       gamerunning = false;
+      DrawRestartButton();
     }
   }
 }
 function restartGame() {
-  obstacles.slice(0, obstacles.length);
-  rect.posX = 230;
-  rect.posY = 450;
+  obstacles = [];
+  player.posX = 230;
+  player.posY = 450;
+
+  score = 0;
   gamerunning = true;
+  requestAnimationFrame(update);
 }
-document.getElementById("Restart").addEventListener("click", function () {
-  restartGame();
-});
+
 // Det här är huvudfunktionen som kör funktioner för att animeringen ska fungera.
 gamerunning = true;
 function update() {
   if (!gamerunning) return;
-  updatePosition(square);
+  updatePosition(player);
   updateObstaclePosition(obstacles);
   obstacles = removeObstaclesOutOfView(obstacles);
   clearCanvas();
-  Background();
-  drawRect(square);
+  drawRoad();
+  drawRect(player);
   drawObstacles();
   console.log(obstacles.length);
-  GameOver(square);
+  GameOver(player);
   writeScore();
   requestAnimationFrame(update);
 }
@@ -162,16 +199,16 @@ document.onkeydown = function (e) {
   const key = e.key;
   switch (key) {
     case "w":
-      square.speedY = -square.speed;
+      player.speedY = -player.speed;
       break;
     case "a":
-      square.speedX = -square.speed;
+      player.speedX = -player.speed;
       break;
     case "s":
-      square.speedY = square.speed;
+      player.speedY = player.speed;
       break;
     case "d":
-      square.speedX = square.speed;
+      player.speedX = player.speed;
       break;
   }
 };
@@ -180,16 +217,16 @@ document.onkeyup = function (e) {
   const key = e.key;
   switch (key) {
     case "w":
-      square.speedY = 0;
+      player.speedY = 0;
       break;
     case "a":
-      square.speedX = 0;
+      player.speedX = 0;
       break;
     case "s":
-      square.speedY = 0;
+      player.speedY = 0;
       break;
     case "d":
-      square.speedX = 0;
+      player.speedX = 0;
       break;
   }
 };

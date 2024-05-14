@@ -12,10 +12,3 @@ body{
     background-size: 100%;
 
 }
-#restart{
-    top: 250px;
-    right: 250px;
-    position: absolute;
-    height: 20px;
-    width: 100px;
-}
