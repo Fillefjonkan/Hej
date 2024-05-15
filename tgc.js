@@ -119,21 +119,23 @@ function drawObstacles() {
   }
 }
 canvas.addEventListener("click", function (e) {
-  const rect = canvas.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const clickY = e.clientY - rect.top;
+  if (!gamerunning) {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
 
-  const buttonX = 150;
-  const buttonY = 310;
-  const buttonWidth = 180;
-  const buttonHeight = 50;
-  if (
-    clickX >= buttonX &&
-    clickX <= buttonX + buttonWidth &&
-    clickY >= buttonY &&
-    clickY <= buttonY + buttonHeight
-  ) {
-    restartGame();
+    const buttonX = 150;
+    const buttonY = 310;
+    const buttonWidth = 180;
+    const buttonHeight = 50;
+    if (
+      clickX >= buttonX &&
+      clickX <= buttonX + buttonWidth &&
+      clickY >= buttonY &&
+      clickY <= buttonY + buttonHeight
+    ) {
+      restartGame();
+    }
   }
 });
 function DrawRestartButton() {
