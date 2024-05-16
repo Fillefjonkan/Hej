@@ -12,9 +12,36 @@ Green.src = "Green.png";
 var Blue = new Image();
 Blue.src = "Blue.png";
 
-r = 1000;
+r = 1500;
 g = 2300;
 b = 8300;
+
+function updateinterval() {
+  if (score >= 1000) {
+    g = 1400;
+    b = 3200;
+    clearInterval(blueInterval);
+    clearInterval(greenInterval);
+    greenInterval = setInterval(addGreencar, g);
+    blueInterval = setInterval(addBluecar, b);
+  } else if (score >= 500) {
+    g = 1700;
+    b = 5400;
+    clearInterval(blueInterval);
+    clearInterval(greenInterval);
+    greenInterval = setInterval(addGreencar, g);
+    blueInterval = setInterval(addBluecar, b);
+  } else if (score >= 100) {
+    g = 1900;
+    b = 6700;
+    clearInterval(blueInterval);
+    clearInterval(greenInterval);
+    greenInterval = setInterval(addGreencar, g);
+    blueInterval = setInterval(addBluecar, b);
+  }
+
+  console.log(g);
+}
 
 let player = {
   height: 80,
@@ -22,17 +49,15 @@ let player = {
   color: "purple",
   posX: 230,
   posY: 400,
-  speedX: 0, // Egenskaper för att styra hastigheten på rutan
+  speedX: 0,
   speedY: 0,
   speed: 5,
 };
 
-// Variabler för att styra hastigheten på rutan
 let obstacleSpeed = 4;
 let speedX = 2;
 let speedY = 2;
 
-//Ritar ut en ruta med sin färg, på den position den befinner sig.
 function drawRect(rect) {
   context.drawImage(bil, rect.posX, rect.posY, rect.width, rect.height);
 }
@@ -41,6 +66,7 @@ function drawRoad() {
   context.drawImage(bild, 0, 0, canvas.width, canvas.height);
 }
 differentcarcolors = [img, Green, Blue];
+
 let score = 0;
 
 function writeScore() {
@@ -51,13 +77,27 @@ function writeScore() {
   context.textAlign = "center";
   context.fillText(`score: ${score}`, TextX, TextY);
 }
-//Uppdaterar postionen på en ruta, beror av speedX och speedY
-//   function updatePosition(rect) {}
+function DrawRestartButton() {
+  let buttonX = 150;
+  let buttonY = 310;
+  let buttonWidth = 180;
+  let buttonHeight = 50;
+
+  context.fillStyle = "violet";
+  context.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+  context.fillStyle = "#001122";
+  context.textAlign = "center";
+  context.font = "25px arial";
+  context.fillText("Start Game", 240, 345, 200);
+}
+function drawGameover() {
+  context.textAlign = "center";
+  context.fillStyle = "black";
+  context.font = "45px seriff";
+  context.fillText("Game over", 240, 290);
+  obstacles = [];
+}
 function updatePosition(rect) {
-  if (rect.posX + 5 < canvas.width) {
-    !gamerunning;
-    DrawRestartButton();
-  }
   if (rect.posY + rect.height >= canvas.height + 1) {
     rect.speedY = -rect.speedY;
   } else if (rect.posY + rect.height <= -1 + rect.height) {
@@ -71,6 +111,27 @@ function updatePosition(rect) {
   rect.posX += rect.speedX;
   rect.posY += rect.speedY;
   console.log(rect);
+  if (rect.posX < 0) {
+    gamerunning = false;
+    clearCanvas();
+    drawRoad();
+    writeScore();
+    drawRect(rect);
+    drawObstacles();
+    drawGameover();
+    DrawRestartButton();
+    requestAnimationFrame();
+  } else if (rect.posX + 50 > canvas.width) {
+    gamerunning = false;
+    clearCanvas();
+    drawRoad();
+    writeScore();
+    drawRect(rect);
+    drawObstacles();
+    drawGameover();
+    DrawRestartButton();
+    requestAnimationFrame();
+  }
 }
 
 function updateObstaclePosition(obstacles) {
@@ -90,6 +151,7 @@ function CarOverLapping(obstacles) {
         obstacles[i].y < obstacles[j].y + obstacles[j].height &&
         obstacles[i].y + obstacles[i].height > obstacles[j].y
       ) {
+        console.log("tar bort");
         obstacles.splice(j, 1);
         random = Math.floor(Math.random() * 3);
         obstacles.push({
@@ -122,11 +184,8 @@ function removeObstaclesOutOfView(obstacles) {
 
   return obstacles;
 }
-
-// Denna funktion "tömmer" canvasen genom att måla den svart.
 function clearCanvas() {
-  context.drawImage(bil, 0, 0);
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 let obstacles = [];
@@ -163,19 +222,7 @@ canvas.addEventListener("click", function (e) {
     }
   }
 });
-function DrawRestartButton() {
-  let buttonX = 150;
-  let buttonY = 310;
-  let buttonWidth = 180;
-  let buttonHeight = 50;
 
-  context.fillStyle = "violet";
-  context.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-  context.fillStyle = "#001122";
-  context.textAlign = "center";
-  context.font = "25px arial";
-  context.fillText("Start Game", 240, 345, 200);
-}
 function GameOver(rect) {
   for (let i = 0; i < obstacles.length; i++) {
     const obstacle = obstacles[i];
@@ -185,10 +232,7 @@ function GameOver(rect) {
       rect.posY < obstacle.y + obstacle.height - 10 &&
       rect.posY + rect.height > obstacle.y + 10
     ) {
-      context.textAlign = "center";
-      context.fillStyle = "black";
-      context.fillText("Game over", 240, 290);
-      obstacles = [];
+      drawGameover();
       gamerunning = false;
       DrawRestartButton();
     }
@@ -210,6 +254,7 @@ function update() {
   if (!gamerunning) return;
   updatePosition(player);
   updateObstaclePosition(obstacles);
+  updateinterval();
   obstacles = removeObstaclesOutOfView(obstacles);
   clearCanvas();
   drawRoad();
@@ -220,6 +265,7 @@ function update() {
   writeScore();
   requestAnimationFrame(update);
 }
+
 requestAnimationFrame(update);
 document.onkeydown = function (e) {
   console.log(e);
@@ -285,6 +331,6 @@ function addBluecar() {
     y: -100,
   });
 }
-setInterval(addBluecar, b);
-setInterval(addGreencar, g);
+let blueInterval = setInterval(addBluecar, b);
+let greenInterval = setInterval(addGreencar, g);
 setInterval(addObstacle, r);
